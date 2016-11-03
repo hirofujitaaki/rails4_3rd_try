@@ -1,9 +1,19 @@
 require 'rails_helper'
 
+describe Admin::StaffMembersController, 'ログイン前' do
+  it_behaves_like 'a protected admin controller'
+end
+
 describe Admin::StaffMembersController do
   let(:params_hash) { attributes_for(:staff_member) }
+  let(:administrator) { create(:administrator) }
 
-  describe '#create' do
+  before do
+    session[:administrator_id] = administrator.id
+    session[:last_access_time] = 1.second.ago
+  end
+
+  describe '#crete' do
     example '職員一覧ページにリダイレクト' do
       post :create, staff_member: params_hash
       expect(response).to redirect_to(admin_staff_members_url)
@@ -16,7 +26,7 @@ describe Admin::StaffMembersController do
     end
   end
 
-  describe '#update' do
+  describe '#upd' do
     let(:staff_member) { create(:staff_member) }
 
     example 'suspendedフラグをセットする' do
